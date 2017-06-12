@@ -89,6 +89,11 @@ export function getEnumValues (values = [], filter = '') {
  * @returns {RSVP.Promise} a promise that resolves with the list of items
  */
 export function getItemsFromAjaxCall ({ajax, bunsenId, data, filter, options, value}) {
+  const showSelectedValues = options.name === 'multi-select' && options.queryForCurrentValue && !!value[bunsenId]
+  const selectedItemsString = showSelectedValues ? value[bunsenId].asMutable().join() : ''
+
+  selectedItemsString ? options.query['selected[' + bunsenId + '][]'] = selectedItemsString : options.query['selected[' + bunsenId + '][]'] = ''
+
   const query = getQuery({
     bunsenId,
     filter,
@@ -114,10 +119,15 @@ export function getItemsFromAjaxCall ({ajax, bunsenId, data, filter, options, va
 
         return []
       }
-
       const {labelAttribute, valueAttribute} = options
 
-      return normalizeItems({data, labelAttribute, records, valueAttribute})
+      if (options.name === 'multi-select' && !showSelectedValues) {
+        return normalizeItems({data: [], labelAttribute, records, valueAttribute})
+      } else if (showSelectedValues) {
+        return moveSelectedItemsToFront({items: normalizeItems({data: [], labelAttribute, records, valueAttribute}), valueRecords: value[bunsenId].asMutable()})
+      } else {
+        return normalizeItems({data, labelAttribute, records, valueAttribute})
+      }
     })
     .catch((err) => {
       Logger.error(`Error fetching endpoint "${options.endpoint}"`, err)
@@ -264,4 +274,23 @@ function shouldAddCurrentValue ({items, valueRecord, labelAttribute, valueAttrib
   const valueRecordMatchesFilter = filterRegex.test(valueRecord.get(labelAttribute))
   const itemsContainsValueRecord = items.find(item => item.value === valueRecord.get(valueAttribute))
   return valueRecordMatchesFilter && !itemsContainsValueRecord
+}
+
+/**
+ * Moves selected records to the top of the array
+ * @param {Object[]} items - the larger set of data
+ * @param {EmberObject} valueRecords - the list of selected records
+ * @returns {Array<Object>} sorted by selected items at the top
+ */
+function moveSelectedItemsToFront ({items, valueRecords}) {
+  for (var i = 0; i < valueRecords.length; i++) {
+    for (var j = 0; j < items.length; j++) {
+      if (items[j].value === valueRecords[i]) {
+        var a = items.splice(j, 1)
+        items.unshift(a[0])
+        break
+      }
+    }
+  }
+  return items
 }
