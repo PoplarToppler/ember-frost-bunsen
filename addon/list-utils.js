@@ -89,8 +89,10 @@ export function getEnumValues (values = [], filter = '') {
  * @returns {RSVP.Promise} a promise that resolves with the list of items
  */
 export function getItemsFromAjaxCall ({ajax, bunsenId, data, filter, options, value}) {
-  const showSelectedValues = options.name === 'multi-select' && options.queryForCurrentValue && !!value[bunsenId]
-  const selectedItemsString = showSelectedValues ? value[bunsenId].asMutable().join() : ''
+  const selectedItemsString = options.name === 'multi-select'
+                              && !!value[bunsenId]
+                              && options.pinSelectedValues
+                              ? value[bunsenId].asMutable().join() : ''
 
   if (selectedItemsString) options.query['selected[' + bunsenId + '][]'] = selectedItemsString
 
@@ -121,10 +123,8 @@ export function getItemsFromAjaxCall ({ajax, bunsenId, data, filter, options, va
       }
       const {labelAttribute, valueAttribute} = options
 
-      if (options.name === 'multi-select' && !showSelectedValues) {
-        return normalizeItems({data: [], labelAttribute, records, valueAttribute})
-      } else if (showSelectedValues) {
-        return moveSelectedItemsToFront({items: normalizeItems({data: [], labelAttribute, records, valueAttribute}), valueRecords: value[bunsenId].asMutable()})
+      if (selectedItemsString) {
+        return moveSelectedItemsToFront({items: normalizeItems({data, labelAttribute, records, valueAttribute}), valueRecords: value[bunsenId].asMutable()})
       } else {
         return normalizeItems({data, labelAttribute, records, valueAttribute})
       }
