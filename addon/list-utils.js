@@ -92,7 +92,7 @@ export function getItemsFromAjaxCall ({ajax, bunsenId, data, filter, options, va
   const showSelectedValues = options.name === 'multi-select' && options.queryForCurrentValue && !!value[bunsenId]
   const selectedItemsString = showSelectedValues ? value[bunsenId].asMutable().join() : ''
 
-  selectedItemsString ? options.query['selected[' + bunsenId + '][]'] = selectedItemsString : options.query['selected[' + bunsenId + '][]'] = ''
+  if (selectedItemsString) options.query['selected[' + bunsenId + '][]'] = selectedItemsString
 
   const query = getQuery({
     bunsenId,
