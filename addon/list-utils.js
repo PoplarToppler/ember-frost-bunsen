@@ -43,7 +43,7 @@ export function getOptions ({ajax, bunsenId, data, filter = '', options, store, 
  * @param {Object} value - the bunsen value for this form
  * @returns {Object} query object with references filled in
  */
-export function getQuery ({bunsenId, filter, query, value}) {
+export function getQuery ({bunsenId, filter, query, value, selectedItems = ''}) {
   const result = utils.populateQuery(value, query, bunsenId)
 
   if (typeOf(result) !== 'object') {
@@ -56,6 +56,10 @@ export function getQuery ({bunsenId, filter, query, value}) {
 
     if (typeOf(value) === 'string') {
       result[key] = value.replace('$filter', filter)
+      if (value.indexOf('$selected') > -1) {
+        selectedItems ? result[key] = value.replace('$selected', selectedItems) :
+                        delete result[key]
+      }
     }
   })
 
@@ -89,18 +93,17 @@ export function getEnumValues (values = [], filter = '') {
  * @returns {RSVP.Promise} a promise that resolves with the list of items
  */
 export function getItemsFromAjaxCall ({ajax, bunsenId, data, filter, options, value}) {
-  const selectedItemsString = options.name === 'multi-select'
+  const selectedItems = options.name === 'multi-select'
                               && !!value[bunsenId]
                               && options.pinSelectedValues
                               ? value[bunsenId].asMutable().join() : ''
-
-  if (selectedItemsString) options.query['selected[' + bunsenId + '][]'] = selectedItemsString
 
   const query = getQuery({
     bunsenId,
     filter,
     query: options.query,
-    value
+    value,
+    selectedItems
   })
 
   const queryString = keys(query)
@@ -123,7 +126,7 @@ export function getItemsFromAjaxCall ({ajax, bunsenId, data, filter, options, va
       }
       const {labelAttribute, valueAttribute} = options
 
-      if (selectedItemsString) {
+      if (selectedItems) {
         return moveSelectedItemsToFront({items: normalizeItems({data, labelAttribute, records, valueAttribute}), valueRecords: value[bunsenId].asMutable()})
       } else {
         return normalizeItems({data, labelAttribute, records, valueAttribute})
