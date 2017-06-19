@@ -534,6 +534,11 @@ export default AbstractInput.extend({
     filterOptions (filter) {
       const value = this.get('formValue')
       this.get('updateItems').perform(value, filter)
-    }
+    },
+
+    handleClick (e) {
+      const value = this.get('formValue')
+      this.get('updateItems').perform(value)
+    },
   }
 })
