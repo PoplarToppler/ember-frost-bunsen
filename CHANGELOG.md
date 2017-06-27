@@ -1,3 +1,10 @@
+# 14.32.12 (2017-06-27)
+**Fixed** issue where inputs are unfocused when items are added to an array. This was causing inputs to lose focus when `autoAdd` feature for arrays is enabled and a user started to type into an empty input.
+
+# 14.32.11 (2017-06-23)
+ * **Updated** version of `ember-frost-date-picker`
+
+
 # 14.32.10 (2017-06-22)
 **Fixed** removal of `_internal` properties for `onChange` handler.
 **Updated** bunsen-core to fix validation for deep internal properties
