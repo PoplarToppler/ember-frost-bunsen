@@ -7,18 +7,34 @@
   </label>
 {{/if}}
 <div class={{inputWrapperClassName}}>
-  {{frost-multi-select
-    class=valueClassName
-    data=options
-    disabled=disabled
-    error=(if renderErrorMessage true false)
-    hook=hook
-    onChange=(action 'handleChange')
-    options=selectSpreadProperties
-    placeholder=placeholder
-    selectedValue=mutableValue
-    width=width
-  }}
+  {{#if updateItemsOnOpen}}
+    {{frost-multi-select
+      class=valueClassName
+      data=options
+      disabled=disabled
+      error=(if renderErrorMessage true false)
+      hook=hook
+      onChange=(action 'handleChange')
+      onClick=(action 'updateItemsOnOpen')
+      options=selectSpreadProperties
+      placeholder=placeholder
+      selectedValue=mutableValue
+      width=width
+    }}
+  {{else}}
+    {{frost-multi-select
+      class=valueClassName
+      data=options
+      disabled=disabled
+      error=(if renderErrorMessage true false)
+      hook=hook
+      onChange=(action 'handleChange')
+      options=selectSpreadProperties
+      placeholder=placeholder
+      selectedValue=mutableValue
+      width=width
+    }}
+  {{/if}}
   {{frost-bunsen-description-bubble
     description=cellConfig.description
   }}

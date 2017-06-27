@@ -90,6 +90,10 @@ export function generateFacetCell (facet) {
     cell.renderer = facet.renderer
   }
 
+  if (facet.placeholder) {
+    cell.placeholder = facet.placeholder
+  }
+
   const renderersToHideClearButtonFor = [
     'multi-select'
   ]

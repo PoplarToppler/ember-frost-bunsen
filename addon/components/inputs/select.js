@@ -172,6 +172,12 @@ export default AbstractInput.extend({
     return get(renderer, 'width') || undefined
   },
 
+  @readOnly
+  @computed('cellConfig')
+  updateItemsOnOpen (cellConfig) {
+    return get(cellConfig, 'renderer.options.updateItemsOnOpen') || undefined
+  },
+
   // == Functions ==============================================================
 
   /**
@@ -534,6 +540,10 @@ export default AbstractInput.extend({
     filterOptions (filter) {
       const value = this.get('formValue')
       this.get('updateItems').perform(value, filter)
+    },
+    updateItemsOnOpen (e) {
+      const value = this.get('formValue')
+      this.get('updateItems').perform(value)
     }
   }
 })
